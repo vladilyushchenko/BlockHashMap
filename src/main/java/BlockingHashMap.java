@@ -1,5 +1,3 @@
-import java.util.concurrent.locks.ReentrantLock;
-
 public class BlockingHashMap<K, V> {
     private static class MapEntry<K, V> {
         protected final K key;
@@ -15,16 +13,10 @@ public class BlockingHashMap<K, V> {
         }
     }
 
-    private final int SEGMENTS_COUNT = 32;
-    public final ReentrantLock[] segments = new ReentrantLock[SEGMENTS_COUNT];
     private final MapEntry<K, V>[] table;
 
     public BlockingHashMap(int initialSize) {
         this.table = newTable(initialSize);
-
-        for (int i = 0; i < SEGMENTS_COUNT; i++) {
-            segments[i] = new ReentrantLock();
-        }
     }
 
     protected MapEntry<K, V>[] newTable(int size) {
@@ -67,7 +59,7 @@ public class BlockingHashMap<K, V> {
         return get(key) != null;
     }
 
-    public synchronized int hashCode(K x) {
+    public int hashCode(K x) {
         int h = x.hashCode();
         return (h << 7) - h + (h >>> 9) + (h >>> 17);
     }

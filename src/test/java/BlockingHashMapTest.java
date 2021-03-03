@@ -1,3 +1,4 @@
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.Random;
@@ -27,6 +28,34 @@ class BlockingHashMapTest {
         for (int key : keys) {
             Assertions.assertNotEquals(innerMap.get(key), null);
         }
+    }
+    @org.junit.jupiter.api.Test
+    void parallelOperations() throws InterruptedException {
+        BlockingHashMap<Integer, Integer> map = new BlockingHashMap<>(1000);
+        map.put(0, 0);
+
+        Thread incThr = new Thread(() ->
+        {
+            for (int i = 0; i < 1000; i++) {
+                map.put(0, map.get(0) + 1);
+            }
+        }
+        );
+
+        Thread decThr = new Thread(() ->
+        {
+            for (int i = 0; i < 1000; i++) {
+                map.put(0, map.get(0) - 1);
+            }
+        }
+        );
+
+        incThr.start();
+        decThr.start();
+        incThr.join();
+        decThr.join();
+
+        Assertions.assertEquals(map.get(0), 0);
     }
 
     @org.junit.jupiter.api.Test
