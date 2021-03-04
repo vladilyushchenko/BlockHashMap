@@ -1,4 +1,5 @@
 public class BlockingHashMap<K, V> {
+
     private static class MapEntry<K, V> {
         protected final K key;
         protected volatile V value;
