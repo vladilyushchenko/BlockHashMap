@@ -30,16 +30,21 @@ public class BlockingHashMap<K, V> {
         int hash = hashCode(key);
         int index = hash & table.length - 1;
         MapEntry<K, V> curr = table[index];
-        for (; curr != null && curr.next != null; curr = curr.next) {
+        for (; curr != null; curr = curr.next) {
             if ((curr.hash == hash) && (key.equals(curr.key))) {
                 curr.value = value;
                 return;
             }
+            if (curr.next == null) {
+                break;
+            }
         }
-        if (curr == null)
+        if (curr == null) {
             table[index] = new MapEntry<>(hash, key, value, null);
-        else
+        }
+        else {
             curr.next = new MapEntry<>(hash, key, value, null);
+        }
 
     }
 
@@ -57,7 +62,16 @@ public class BlockingHashMap<K, V> {
     }
 
     public boolean contains(K key) {
-        return get(key) != null;
+        int hash = hashCode(key);
+        int index = hash & table.length - 1;
+
+        for (MapEntry<K, V> curr = table[index]; curr != null; curr = curr.next) {
+            if (curr.hash == hash && key.equals(curr.key)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public int hashCode(K x) {
